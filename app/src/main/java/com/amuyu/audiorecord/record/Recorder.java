@@ -116,8 +116,6 @@ public class Recorder implements IAudioRecord, Runnable {
             mRecorder.stop();
         }
 
-        disposable.dispose();
-
         try {
             mThread.join();
         } catch (InterruptedException e) {
