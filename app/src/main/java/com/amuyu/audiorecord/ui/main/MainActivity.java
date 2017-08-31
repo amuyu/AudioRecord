@@ -25,28 +25,24 @@ public class MainActivity extends LifecycleActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Logger.d("");
-//        setContentView(R.layout.activity_main);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         viewModel = ViewModelProviders.of(this, Injection.provideViewModelFactory())
                 .get(MainViewModel.class);
 
         binding.btnRecord.setOnClickListener(view -> {
-            boolean isRecord = viewModel.isRecording().getValue();
-            if(!isRecord)
+            if(!viewModel.isRecording().getValue())
                 viewModel.startRecord();
             else
                 viewModel.stopRecord();
-            viewRecordBtn(isRecord);
         });
 
         binding.btnPlay.setOnClickListener(view -> {
-            boolean isPlay = viewModel.isPlaying().getValue();
-            if(!isPlay)
+            if(!viewModel.isPlaying().getValue())
                 viewModel.startPlayer();
             else
                 viewModel.stopPlayer();
-            viewPlayBtn(isPlay);
+
         });
     }
 
@@ -55,21 +51,21 @@ public class MainActivity extends LifecycleActivity {
         super.onStart();
 
         viewModel.isRecording().observe(this, record -> {
-            Logger.d("isRecording:"+record);
+            viewRecordBtn(record);
         });
 
         viewModel.isPlaying().observe(this, play -> {
-            Logger.d("isPlaying:"+play);
+            viewPlayBtn(play);
         });
     }
 
     private void viewRecordBtn(boolean isRecord) {
-        binding.btnPlay.setClickable(isRecord);
-        binding.btnPlay.setText(!isRecord?getString(R.string.record_stop):getString(R.string.record_start));
+        binding.btnPlay.setEnabled(!isRecord);
+        binding.btnRecord.setText(isRecord?getString(R.string.record_stop):getString(R.string.record_start));
     }
 
     private void viewPlayBtn(boolean isPlay) {
-        binding.btnRecord.setClickable(isPlay);
-        binding.btnRecord.setText(!isPlay?getString(R.string.play_stop):getString(R.string.play_start));
+        binding.btnRecord.setEnabled(!isPlay);
+        binding.btnPlay.setText(isPlay?getString(R.string.play_stop):getString(R.string.play_start));
     }
 }
