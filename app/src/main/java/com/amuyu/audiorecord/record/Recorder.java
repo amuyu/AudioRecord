@@ -25,7 +25,7 @@ public class Recorder implements IAudioRecord, Runnable {
     final static int PCM_FORMAT = 16;
 
     // recorder
-    private int bufferSize = 0;
+    private int bufferSize = 4096;
     private static AudioRecord mRecorder = null;
 
     // encoder
@@ -53,7 +53,9 @@ public class Recorder implements IAudioRecord, Runnable {
     private void initFile() {
         filePath = Environment.getExternalStorageDirectory() + "/audio.aac";
         mEncodeFile = new File(filePath);
-        if(mEncodeFile.exists()) mEncodeFile.delete();
+        if(mEncodeFile.exists()) {
+            if(mEncodeFile.delete()) throw new RuntimeException("Fail to delete.");
+        }
     }
 
     private void initEncoder() {
@@ -73,9 +75,6 @@ public class Recorder implements IAudioRecord, Runnable {
 
         int channelConfig = channelType[channels - 1];
         int audioFormat = pcmType[pcmFormat / 8 - 1];
-
-        bufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
-        bufferSize = 4096; //?
 
         mRecorder = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate,
                 channelConfig, audioFormat, bufferSize);
